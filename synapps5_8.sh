@@ -53,3 +53,7 @@ sed -i 's/QUADEM=$(SUPPORT)\/quadEM-5-0/#QUADEM=$(SUPPORT)\/quadEM-5-0/'  /usr/l
 
 cd /usr/local/epics/synApps_5_8/support && make release
 cd /usr/local/epics/synApps_5_8/support && make
+
+# generate envPaths to areaDetectorSim
+
+cp /usr/local/epics/synApps_5_8/support/areaDetector-R2-0/ADCore-R2-2/iocs/simDetectorIOC/iocBoot/iocSimDetector/envPaths /usr/local/epics/synApps_5_8/support/areaDetector-R2-0/ADCore-R2-2/iocs/simDetectorIOC/iocBoot/iocSimDetector/envPaths.linux
