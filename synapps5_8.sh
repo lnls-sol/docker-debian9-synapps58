@@ -7,6 +7,34 @@ rm synApps_5_8.tar.gz
 
 mv synApps_5_8 /usr/local/epics
 
+# install libsz2 and hdf5
+wget https://support.hdfgroup.org/ftp/lib-external/szip/2.1.1/src/szip-2.1.1.tar.gz
+tar -xzf szip-2.1.1.tar.gz
+cd szip-2.1.1
+./configure --prefix=/usr/local/epics/szip
+make
+make check
+make install
+
+cd ..
+rm -rf szip-2.1.1
+rm szip-2.1.1.tar.gz
+
+
+wget https://support.hdfgroup.org/ftp/HDF5/current18/src/hdf5-1.8.20.tar.gz
+tar -xzf hdf5-1.8.20.tar.gz
+cd hdf5-1.8.20
+./configure --prefix=/usr/local/epics/hdf5
+make
+make test
+make install
+
+cd ..
+rm -rf hdf5-1.8.20
+rm hdf5-1.8.20.tar.gz 
+
+# fix paths
+
 find /usr/local/epics/synApps_5_8 -type f -name "RELEASE" -exec sed -i 's/SUPPORT=\/home\/oxygen\/MOONEY\/distrib\/synApps_5_8\/support/SUPPORT=\/usr\/local\/epics\/synApps_5_8\/support/g; s/EPICS_BASE=\/home\/oxygen\/MOONEY\/epics\/bazaar\/base-3.15/EPICS_BASE=\/usr\/local\/epics\/base/g' {} +
 
 sed -i '283s/^/\/\/ /; 284s/^/\/\/ /' /usr/local/epics/synApps_5_8/support/caputRecorder-1-4-2/caputRecorderApp/src/caputRecorder.c
@@ -16,7 +44,7 @@ sed -i 's/^/# /' /usr/local/epics/synApps_5_8/support/devIocStats-3-1-13/RELEASE
 echo 'MODULES_SITE_TOP=/usr/lib/local/modules' >> /usr/local/epics/synApps_5_8/support/devIocStats-3-1-13/RELEASE_SITE
 
 
-sed -i 's/HDF5         = \/APSshare\/linux\/x86_64\/libHDF5/HDF5         = \/usr\/lib\/x86_64-linux-gnu\/hdf5\/serial/; s/SZIP           = \/APSshare\/linux\/x86_64\/libSZIP/SZIP           = \/usr\/lib\/x86_64-linux-gnu/; s/$(SZIP)\/lib/\/usr\/lib\/x86_64-linux-gnu/' /usr/local/epics/synApps_5_8/support/areaDetector-R2-0/configure/CONFIG_SITE.local.linux-x86_64
+sed -i 's:HDF5         = /APSshare/linux/x86_64/libHDF5:HDF5         = /usr/local/epics/hdf5:; s:SZIP           = /APSshare/linux/x86_64/libSZIP:SZIP           = /usr/local/epics/szip:' /usr/local/epics/synApps_5_8/support/areaDetector-R2-0/configure/CONFIG_SITE.local.linux-x86_64
 
 
 
@@ -46,14 +74,6 @@ sed -i 's/fprintf(fp, section);/fprintf(fp, "%s", section);/'  /usr/local/epics/
 
 # fix hardening -- end
 
-# disable Quadem
-
-sed -i 's/QUADEM=$(SUPPORT)\/quadEM-5-0/#QUADEM=$(SUPPORT)\/quadEM-5-0/'  /usr/local/epics/synApps_5_8/support/configure/RELEASE
-
 
 cd /usr/local/epics/synApps_5_8/support && make release
 cd /usr/local/epics/synApps_5_8/support && make
-
-# generate envPaths to areaDetectorSim
-
-cp /usr/local/epics/synApps_5_8/support/areaDetector-R2-0/ADCore-R2-2/iocs/simDetectorIOC/iocBoot/iocSimDetector/envPaths /usr/local/epics/synApps_5_8/support/areaDetector-R2-0/ADCore-R2-2/iocs/simDetectorIOC/iocBoot/iocSimDetector/envPaths.linux
